@@ -4,7 +4,8 @@ import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
-import { cn } from "@/lib/utils"
+import { cn, constraints } from "@/lib/utils"
+
 import { Icons } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -27,20 +28,11 @@ export default function UserAuthForm({
 
 		setTimeout(() => {
 			setIsLoading(false)
-			router.push("/dashboard")
+			router.push("/verify")
 		}, 300)
 	}
-	const constraints = {
-		email: [
-			"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$",
-			"Incorrect email format",
-		],
-		password: [
-			"^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$",
-			"Minimum eight characters, at least one letter and one number",
-		],
-	}
-	function validateForm(e: React.ChangeEvent<HTMLInputElement> | null) {
+
+	function validateForm(e: React.ChangeEvent<HTMLInputElement>) {
 		if (formRef.current) {
 			if (e && constraints.hasOwnProperty(e.target.id)) {
 				const input = e.target as HTMLInputElement
@@ -71,7 +63,7 @@ export default function UserAuthForm({
 							<Label htmlFor="name">
 								Name{" "}
 								<Input
-									onChange={validateForm}
+									onChange={e => validateForm(e)}
 									id="name"
 									placeholder="John Doe"
 									type="name"
