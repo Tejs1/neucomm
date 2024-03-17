@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 
 export default function UserAuthForm() {
 	const [isLoading, setIsLoading] = useState<boolean>(false)
+	const [otpValues, setOtpValues] = useState<string[]>(Array(8).fill(""))
 	const router = useRouter()
 
 	// Create a ref array for the input fields
@@ -32,29 +33,34 @@ export default function UserAuthForm() {
 		e: React.ChangeEvent<HTMLInputElement>,
 		index: number,
 	) => {
-		const value = e.target.value
-		if (value) {
-			focusNextInputField(index)
-		}
+		// const value = e.target.value
+		// if (value) {
+		// 	focusNextInputField(index)
+		// }
 	}
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
-		if (e.key === "Backspace" && !e.currentTarget.value) {
-			focusPrevInputField(index)
-		} else if (e.key === "ArrowLeft") {
-			focusPrevInputField(index)
-		} else if (e.key === "ArrowRight") {
-			focusNextInputField(index)
-		} else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-			e.preventDefault()
-		} else {
+		if (e.key === "Backspace") {
+			if (!otpValues[index]) focusPrevInputField(index)
+			else {
+				const newOtpValues = [...otpValues]
+				newOtpValues[index] = ""
+				setOtpValues(newOtpValues)
+			}
+		} else if (e.key === "ArrowLeft") focusPrevInputField(index)
+		else if (e.key === "ArrowRight") focusNextInputField(index)
+		else {
 			const value = e.key
 			const input = otpRefs.current[index].current
 			const isValueValid =
 				/^[a-z0-9]$/.test(value) && value.length === 1 && value !== " "
 			if (isValueValid && input) {
-				input.value = value.toUpperCase()
-				focusNextInputField(index)
+				const newOtpValues = [...otpValues]
+				newOtpValues[index] = value.toLocaleUpperCase()
+				setOtpValues(newOtpValues)
+				if (value) {
+					focusNextInputField(index)
+				}
 			}
 		}
 	}
@@ -68,18 +74,17 @@ export default function UserAuthForm() {
 			router.push("/dashboard")
 		}, 300)
 	}
-	// handlePaste
 	const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
 		e.preventDefault()
-		const paste = e.clipboardData?.getData("text")
-		const pasteArray = paste.split("").slice(0, 8)
+		const paste = e.clipboardData?.getData("text").slice(0, 8)
+		const newOtpValues = [...otpValues]
+		const trimmedPaste = paste.trim().toLocaleUpperCase().split("")
 
-		for (let i = 0; i < pasteArray.length; i++) {
-			const input = otpRefs.current[i].current
-			if (input) {
-				input.value = pasteArray[i]
-			}
-		}
+		trimmedPaste.forEach((char, i) => {
+			newOtpValues[i] = char
+		})
+		setOtpValues(newOtpValues)
+		focusNextInputField(trimmedPaste.length - 1)
 	}
 	return (
 		<main className="flex-grow flex h-full flex-col items-center justify-center">
@@ -101,14 +106,15 @@ export default function UserAuthForm() {
 								required
 								key={index}
 								ref={otpRefs.current[index]}
-								value={otpRefs.current[index].current?.value}
 								type="text"
 								maxLength={1}
 								id={`otp${index + 1}`}
 								placeholder="0"
 								className="w-12 h-12 text-center"
-								onPaste={e => handlePaste(e)}
+								value={otpValues[index]}
+								onChange={e => handleInputChange(e, index)}
 								onKeyDown={e => handleKeyDown(e, index)}
+								onPaste={e => handlePaste(e)}
 							/>
 						))}
 					</div>
