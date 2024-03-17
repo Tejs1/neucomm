@@ -41,6 +41,21 @@ export default function UserAuthForm() {
 	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
 		if (e.key === "Backspace" && !e.currentTarget.value) {
 			focusPrevInputField(index)
+		} else if (e.key === "ArrowLeft") {
+			focusPrevInputField(index)
+		} else if (e.key === "ArrowRight") {
+			focusNextInputField(index)
+		} else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+			e.preventDefault()
+		} else {
+			const value = e.key
+			const input = otpRefs.current[index].current
+			const isValueValid =
+				/^[a-z0-9]$/.test(value) && value.length === 1 && value !== " "
+			if (isValueValid && input) {
+				input.value = value.toUpperCase()
+				focusNextInputField(index)
+			}
 		}
 	}
 
@@ -54,16 +69,13 @@ export default function UserAuthForm() {
 		}, 300)
 	}
 	// handlePaste
-	const handlePaste = (
-		e: React.ClipboardEvent<HTMLInputElement>,
-		index: number,
-	) => {
+	const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
 		e.preventDefault()
 		const paste = e.clipboardData?.getData("text")
 		const pasteArray = paste.split("").slice(0, 8)
 
 		for (let i = 0; i < pasteArray.length; i++) {
-			const input = otpRefs.current[index + i].current
+			const input = otpRefs.current[i].current
 			if (input) {
 				input.value = pasteArray[i]
 			}
@@ -89,13 +101,13 @@ export default function UserAuthForm() {
 								required
 								key={index}
 								ref={otpRefs.current[index]}
+								value={otpRefs.current[index].current?.value}
 								type="text"
 								maxLength={1}
 								id={`otp${index + 1}`}
 								placeholder="0"
 								className="w-12 h-12 text-center"
-								onChange={e => handleInputChange(e, index)}
-								onPaste={e => handlePaste(e, index)}
+								onPaste={e => handlePaste(e)}
 								onKeyDown={e => handleKeyDown(e, index)}
 							/>
 						))}
