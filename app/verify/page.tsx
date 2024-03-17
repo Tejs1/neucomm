@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useRef, KeyboardEvent } from "react"
+import React, { useState, useRef, KeyboardEvent, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Icons } from "@/components/icons"
 import { Button } from "@/components/ui/button"
@@ -17,53 +17,57 @@ export default function UserAuthForm() {
 		.fill(null)
 		.map((_, i) => otpRefs.current[i] ?? React.createRef<HTMLInputElement>())
 
-	const focusNextInputField = (index: number) => {
+	const focusNextInputField = useCallback((index: number) => {
 		if (index < 7) {
 			otpRefs.current[index + 1].current?.focus()
 		}
-	}
+	}, [])
 
-	const focusPrevInputField = (index: number) => {
+	const focusPrevInputField = useCallback((index: number) => {
 		if (index > 0) {
 			otpRefs.current[index - 1].current?.focus()
 		}
-	}
+	}, [])
 
-	const handleInputChange = (
-		e: React.ChangeEvent<HTMLInputElement>,
-		index: number,
-	) => {
-		// const value = e.target.value
-		// if (value) {
-		// 	focusNextInputField(index)
-		// }
-	}
+	const handleInputChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+			// const value = e.target.value
+			// if (value) {
+			// 	focusNextInputField(index)
+			// }
+		},
+		[],
+	)
 
-	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
-		if (e.key === "Backspace") {
-			if (!otpValues[index]) focusPrevInputField(index)
+	const handleKeyDown = useCallback(
+		(e: KeyboardEvent<HTMLInputElement>, index: number) => {
+			console.log(e.key)
+			if (e.key === "Backspace") {
+				if (!otpValues[index]) focusPrevInputField(index)
+				else {
+					const newOtpValues = [...otpValues]
+					newOtpValues[index] = ""
+					setOtpValues(newOtpValues)
+				}
+			} else if (e.key === "ArrowLeft") focusPrevInputField(index)
+			else if (e.key === "ArrowRight") focusNextInputField(index)
 			else {
-				const newOtpValues = [...otpValues]
-				newOtpValues[index] = ""
-				setOtpValues(newOtpValues)
-			}
-		} else if (e.key === "ArrowLeft") focusPrevInputField(index)
-		else if (e.key === "ArrowRight") focusNextInputField(index)
-		else {
-			const value = e.key
-			const input = otpRefs.current[index].current
-			const isValueValid =
-				/^[a-z0-9]$/.test(value) && value.length === 1 && value !== " "
-			if (isValueValid && input) {
-				const newOtpValues = [...otpValues]
-				newOtpValues[index] = value.toLocaleUpperCase()
-				setOtpValues(newOtpValues)
-				if (value) {
-					focusNextInputField(index)
+				const value = e.key
+				const input = otpRefs.current[index].current
+				const isValueValid =
+					/^[a-z0-9]$/.test(value) && value.length === 1 && value !== " "
+				if (isValueValid && input) {
+					const newOtpValues = [...otpValues]
+					newOtpValues[index] = value.toLocaleUpperCase()
+					setOtpValues(newOtpValues)
+					if (value) {
+						focusNextInputField(index)
+					}
 				}
 			}
-		}
-	}
+		},
+		[otpValues, focusNextInputField, focusPrevInputField],
+	)
 
 	async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault()
