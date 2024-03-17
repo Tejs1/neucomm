@@ -1,6 +1,5 @@
 "use client"
-
-import React, { useState, useRef, useEffect } from "react"
+import React, { useState, useRef, KeyboardEvent } from "react"
 import { useRouter } from "next/navigation"
 import { Icons } from "@/components/icons"
 import { Button } from "@/components/ui/button"
@@ -8,18 +7,24 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 export default function UserAuthForm() {
-	const [isLoading, setIsLoading] = useState(false)
+	const [isLoading, setIsLoading] = useState<boolean>(false)
 	const router = useRouter()
 
-	// Create an array of refs
+	// Create a ref array for the input fields
 	const otpRefs = useRef<Array<React.RefObject<HTMLInputElement>>>([])
 	otpRefs.current = Array(8)
-		.fill(null, 0, 8)
-		.map((_, i) => otpRefs.current[i] ?? React.createRef())
+		.fill(null)
+		.map((_, i) => otpRefs.current[i] ?? React.createRef<HTMLInputElement>())
 
 	const focusNextInputField = (index: number) => {
-		if (index < 7 && otpRefs.current[index + 1]?.current) {
-			otpRefs.current[index + 1]?.current?.focus()
+		if (index < 7) {
+			otpRefs.current[index + 1].current?.focus()
+		}
+	}
+
+	const focusPrevInputField = (index: number) => {
+		if (index > 0) {
+			otpRefs.current[index - 1].current?.focus()
 		}
 	}
 
@@ -33,17 +38,21 @@ export default function UserAuthForm() {
 		}
 	}
 
-	async function onSubmit(event: { preventDefault: () => void }) {
+	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
+		if (e.key === "Backspace" && !e.currentTarget.value) {
+			focusPrevInputField(index)
+		}
+	}
+
+	async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault()
 		setIsLoading(true)
 
-		// Simulate an API call
 		setTimeout(() => {
 			setIsLoading(false)
 			router.push("/dashboard")
 		}, 300)
 	}
-
 	// handlePaste
 	const handlePaste = (
 		e: React.ClipboardEvent<HTMLInputElement>,
@@ -51,7 +60,7 @@ export default function UserAuthForm() {
 	) => {
 		e.preventDefault()
 		const paste = e.clipboardData?.getData("text")
-		const pasteArray = paste.split("")
+		const pasteArray = paste.split("").slice(0, 8)
 
 		for (let i = 0; i < pasteArray.length; i++) {
 			const input = otpRefs.current[index + i].current
@@ -81,23 +90,17 @@ export default function UserAuthForm() {
 								key={index}
 								ref={otpRefs.current[index]}
 								type="text"
-								autoCapitalize="words"
 								maxLength={1}
 								id={`otp${index + 1}`}
 								placeholder="0"
 								className="w-12 h-12 text-center"
 								onChange={e => handleInputChange(e, index)}
 								onPaste={e => handlePaste(e, index)}
+								onKeyDown={e => handleKeyDown(e, index)}
 							/>
 						))}
 					</div>
-
-					<Button
-						disabled={isLoading}
-						className="uppercase"
-						value="Validate"
-						type="submit"
-					>
+					<Button disabled={isLoading} className="uppercase">
 						{isLoading && (
 							<Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
 						)}
