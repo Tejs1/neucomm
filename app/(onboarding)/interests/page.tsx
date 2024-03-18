@@ -11,46 +11,17 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-export default function UserAuthForm({
-	className,
-	...props
-}: UserAuthFormProps) {
+export default function Interests({ ...props }) {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false)
-	const [isFormValid, setIsFormValid] = React.useState<boolean>(false)
 	const router = useRouter()
-	const formRef = React.useRef<HTMLFormElement>(null)
-
 	async function onSubmit(event: React.SyntheticEvent) {
 		event.preventDefault()
 		setIsLoading(true)
 
 		setTimeout(() => {
 			setIsLoading(false)
-			router.push("/interests")
+			router.push("/verify")
 		}, 300)
-	}
-
-	function validateForm(e: React.ChangeEvent<HTMLInputElement>) {
-		if (formRef.current) {
-			if (e && constraints.hasOwnProperty(e.target.id)) {
-				const input = e.target as HTMLInputElement
-				type InputType = keyof typeof constraints
-				const type: string = input.id
-
-				const constraintEmail = new RegExp(
-					constraints[type as InputType][0],
-					"",
-				)
-				if (constraintEmail.test(input.value)) {
-					input.setCustomValidity("")
-				} else {
-					input.setCustomValidity(constraints[type as InputType][1])
-				}
-			}
-			setIsFormValid((formRef.current as HTMLFormElement).checkValidity())
-		}
 	}
 
 	return (
@@ -67,20 +38,18 @@ export default function UserAuthForm({
 					</span>
 				</div>
 
-				<form ref={formRef} onSubmit={onSubmit}>
+				<form onSubmit={onSubmit}>
 					<div className="grid gap-2">
 						<div className="grid gap-8">
 							<Label htmlFor="email">
 								Email{" "}
 								<Input
-									onChange={e => validateForm(e)}
 									id="email"
 									placeholder="name@example.com"
 									type="email"
 									autoCapitalize="none"
 									autoComplete="email"
 									autoCorrect="off"
-									disabled={isLoading}
 									className="mt-2"
 									required
 								/>
@@ -89,24 +58,17 @@ export default function UserAuthForm({
 							<Label htmlFor="password">
 								Password{" "}
 								<Input
-									onChange={e => validateForm(e)}
 									id="password"
 									placeholder="Enter your password"
 									type="password"
 									autoCapitalize="none"
 									autoComplete="password"
 									autoCorrect="off"
-									disabled={isLoading}
 									className="mt-2"
 									required
 								/>
 							</Label>
-							<Button
-								disabled={isLoading}
-								className="uppercase"
-								value="Validate"
-								type="submit"
-							>
+							<Button className="uppercase" value="Validate" type="submit">
 								{isLoading && (
 									<Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
 								)}
