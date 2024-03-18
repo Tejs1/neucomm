@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-export default function Interests({ ...props }) {
+export default function Interests() {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false)
 	const router = useRouter()
 	async function onSubmit(event: React.SyntheticEvent) {

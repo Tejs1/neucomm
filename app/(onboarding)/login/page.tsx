@@ -11,12 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-export default function UserAuthForm({
-	className,
-	...props
-}: UserAuthFormProps) {
+export default function UserAuthForm() {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false)
 	const [isFormValid, setIsFormValid] = React.useState<boolean>(false)
 	const router = useRouter()
