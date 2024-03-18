@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import dynamic from "next/dynamic"
 
 import { Search, ShoppingCart, ChevronRight, ChevronLeft } from "lucide-react"
 
@@ -17,6 +18,12 @@ import {
 	navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 
+const ModeToggle = dynamic(
+	() => import("@/components/ModeToggle").then(mod => mod.ModeToggle),
+	{
+		ssr: false,
+	},
+)
 const components: { title: string; href: string; description: string }[] = [
 	{
 		title: "Alert Dialog",
@@ -135,6 +142,7 @@ export function NavBar() {
 					</NavigationMenuList>
 				</NavigationMenu>
 				<div className="flex flex-row">
+					<ModeToggle />
 					<Search />
 					<ShoppingCart />
 				</div>
