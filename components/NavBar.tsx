@@ -147,7 +147,7 @@ export function NavBar() {
 					<ShoppingCart />
 				</div>
 			</div>
-			<div className="flex flex-row items-center justify-center bg-gray-100 w-full">
+			<div className="flex flex-row items-center justify-center bg-secondary w-full">
 				<ChevronLeft />
 				Get 10% off on business sign up
 				<ChevronRight />

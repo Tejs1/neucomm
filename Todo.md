@@ -7,12 +7,16 @@
 - [ ] add `prisma` for database
 - [ ] add `next-iron-session` for session management
 
+## Fix
+
+- [ ] fix Extra attributes from the server for `next-themes`
+
 ## Optmizations
 
 - [ ] use `react-hook-form` and `zod` for form validation
 - [ ] use `next-optimized-images` for image optimization
 - [ ] use `next-seo` for SEO
-- [ ] use `next-themes` for dark mode
+- [x] use `next-themes` for dark mode
 - [ ] use `next-transpile-modules` for transpiling node_modules
 - [ ] use `next-mdx-remote` for MDX
 - [ ] use `next-i18next` for i18n
