@@ -130,15 +130,6 @@ export default function UserAuthForm({
 						</Link>
 					</span>
 				</div>
-
-				{/* <Button variant="outline" type="button" disabled={isLoading}>
-				{isLoading ? (
-					<Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-				) : (
-					<Icons.gitHub className="mr-2 h-4 w-4" />
-				)}{" "}
-				GitHub
-			</Button> */}
 			</div>
 		</main>
 	)

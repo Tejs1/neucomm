@@ -126,7 +126,7 @@ export default function UserAuthForm() {
 						{isLoading && (
 							<Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
 						)}
-						Create Account
+						Verify
 					</Button>
 				</form>
 			</div>
