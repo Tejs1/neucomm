@@ -75,7 +75,7 @@ export default function UserAuthForm() {
 
 		setTimeout(() => {
 			setIsLoading(false)
-			router.push("/dashboard")
+			router.push("/interests")
 		}, 300)
 	}
 	const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
