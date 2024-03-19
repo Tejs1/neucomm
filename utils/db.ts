@@ -1,26 +1,24 @@
-// import { PrismaClient } from "@prisma/client/edge"
-import { Pool, neonConfig } from "@neondatabase/serverless"
-import { PrismaNeon } from "@prisma/adapter-neon"
-import { PrismaClient } from "@prisma/client"
-import ws from "ws"
-neonConfig.webSocketConstructor = ws
-const connectionString = `${process.env.DATABASE_URL}`
-const pool = new Pool({ connectionString })
-const adapter = new PrismaNeon(pool)
+// PrismaClient is attached to the `global` object in development to prevent
+// exhausting your database connection limit.
+//
+// Learn more:
+// https://pris.ly/d/help/next-js-best-practices
 
-declare global {
-	var prisma: PrismaClient | undefined
+import { PrismaClient } from "@prisma/client/edge"
+import { withAccelerate } from "@prisma/extension-accelerate"
+
+const prismaClientSingleton = () => {
+	return new PrismaClient().$extends(withAccelerate())
 }
 
-let prisma: PrismaClient
+type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>
 
-if (process.env.NODE_ENV === "production") {
-	prisma = new PrismaClient({ adapter })
-} else {
-	if (!global.prisma) {
-		global.prisma = new PrismaClient({ adapter })
-	}
-	prisma = global.prisma
+const globalForPrisma = globalThis as unknown as {
+	prisma: PrismaClientSingleton | undefined
 }
+
+const prisma = globalForPrisma.prisma ?? prismaClientSingleton()
 
 export default prisma
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma
