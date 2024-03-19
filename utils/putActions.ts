@@ -26,7 +26,6 @@ export async function createUser(
 	}
 
 	const data = parse.data
-	console.log(data)
 	try {
 		// await db.user.create({
 		// 	data: {
@@ -36,7 +35,6 @@ export async function createUser(
 		// 	},
 		// })
 		// fake timeout
-		await new Promise(resolve => setTimeout(resolve, 3000))
 		revalidatePath("/")
 
 		return { message: "created User", email: data.email }

@@ -28,10 +28,9 @@ const initialState = {
 
 export default function UserAuthForm() {
 	const [name, setName] = useState("")
+	const router = useRouter()
 	const { isLoaded, signUp, setActive } = useSignUp()
 	const [pendingVerification, setPendingVerification] = useState(false)
-
-	const router = useRouter()
 
 	const [isLoading, setIsLoading] = React.useState<boolean>(false)
 	const [isFormValid, setIsFormValid] = React.useState<boolean>(false)
@@ -95,7 +94,7 @@ export default function UserAuthForm() {
 			}
 			if (completeSignUp.status === "complete") {
 				await setActive({ session: completeSignUp.createdSessionId })
-				router.push("/")
+				router.push("/verify")
 			}
 		} catch (err: any) {
 			console.error(JSON.stringify(err, null, 2))

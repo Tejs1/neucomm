@@ -2,7 +2,9 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useSignIn } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
+import { z } from "zod"
 
 import { cn, constraints } from "@/lib/utils"
 
@@ -12,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 export default function UserAuthForm() {
+	const { isLoaded, signIn, setActive } = useSignIn()
 	const [isLoading, setIsLoading] = React.useState<boolean>(false)
 	const [isFormValid, setIsFormValid] = React.useState<boolean>(false)
 	const router = useRouter()
@@ -19,12 +22,48 @@ export default function UserAuthForm() {
 
 	async function onSubmit(event: React.SyntheticEvent) {
 		event.preventDefault()
-		setIsLoading(true)
+		console.log("submitting")
+		if (!isLoaded) {
+			return
+		}
+		const form = event.currentTarget as HTMLFormElement
+		if (!form.checkValidity()) {
+			return
+		}
+		const formData = new FormData(form)
+		const emailAddress = formData.get("email") as string
+		const password = formData.get("password") as string
 
-		setTimeout(() => {
-			setIsLoading(false)
-			router.push("/interests")
-		}, 300)
+		const schema = z.object({
+			email: z.string().email(),
+			password: z.string().min(8),
+		})
+
+		const parse = schema.safeParse({
+			email: emailAddress,
+			password: password,
+		})
+
+		if (!parse.success) {
+			throw new Error("Invalid form data")
+		}
+
+		try {
+			const result = await signIn.create({
+				identifier: emailAddress,
+				password,
+			})
+
+			if (result.status === "complete") {
+				await setActive({ session: result.createdSessionId })
+				router.push("/verify")
+			} else {
+				/*Investigate why the sign-in hasn't completed */
+				console.log(result, "result")
+			}
+		} catch (err: any) {
+			console.error("error", err)
+		}
 	}
 
 	function validateForm(e: React.ChangeEvent<HTMLInputElement>) {
@@ -70,8 +109,9 @@ export default function UserAuthForm() {
 								<Input
 									onChange={e => validateForm(e)}
 									id="email"
-									placeholder="name@example.com"
 									type="email"
+									name="email"
+									placeholder="name@example.com"
 									autoCapitalize="none"
 									autoComplete="email"
 									autoCorrect="off"
@@ -86,8 +126,9 @@ export default function UserAuthForm() {
 								<Input
 									onChange={e => validateForm(e)}
 									id="password"
-									placeholder="Enter your password"
 									type="password"
+									name="password"
+									placeholder="Enter your password"
 									autoCapitalize="none"
 									autoComplete="password"
 									autoCorrect="off"
@@ -113,7 +154,7 @@ export default function UserAuthForm() {
 
 				<div className="relative flex justify-center text-xs ">
 					<span className="bg-background px-2 text-accent-foreground">
-						Don’t have an Account?{" "}
+						DonU+2019t have an Account?{" "}
 						<Link href="sign-up" className="uppercase font-bold">
 							Sign up
 						</Link>
