@@ -1,9 +1,13 @@
-"use server"
+export const config = {
+	runtime: "edge",
+}
 import { permanentRedirect, redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
+import { PrismaClient } from "@prisma/client"
 import db from "@/utils/db"
 import { z } from "zod"
 
+// const db = new PrismaClient()
 export async function getFirstUser() {
 	const user = await db.user.findFirst()
 	return user
