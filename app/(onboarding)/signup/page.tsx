@@ -3,7 +3,8 @@
 import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-
+import { useFormState, useFormStatus } from "react-dom"
+import { createUser } from "@/utils/actions"
 import { cn, constraints } from "@/lib/utils"
 
 import { Icons } from "@/components/icons"
@@ -11,9 +12,22 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
+const initialState = {
+	message: "",
+}
+// function SubmitButton() {
+// 	return (
+// 		<button type="submit" aria-disabled={pending}>
+// 			Add
+// 		</button>
+// 	)
+// }
+
 export default function UserAuthForm() {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false)
 	const [isFormValid, setIsFormValid] = React.useState<boolean>(false)
+	const [state, formAction] = useFormState(createUser, initialState)
+	const { pending } = useFormStatus()
 	const router = useRouter()
 	const formRef = React.useRef<HTMLFormElement>(null)
 
@@ -52,7 +66,7 @@ export default function UserAuthForm() {
 		<main className="flex-grow flex h-full flex-col items-center  ">
 			<div className="grid gap-6 m-auto border rounded-3xl p-10">
 				<h1 className="text-[32px] font-semibold">Create your account</h1>
-				<form ref={formRef} onSubmit={onSubmit}>
+				<form ref={formRef} action={formAction}>
 					<div className="grid gap-2">
 						<div className="grid gap-8">
 							<Label htmlFor="name">
@@ -60,8 +74,9 @@ export default function UserAuthForm() {
 								<Input
 									onChange={e => validateForm(e)}
 									id="name"
-									placeholder="John Doe"
 									type="name"
+									name="name"
+									placeholder="John Doe"
 									autoCapitalize="words"
 									autoComplete="name"
 									autoCorrect="off"
@@ -76,8 +91,9 @@ export default function UserAuthForm() {
 								<Input
 									onChange={e => validateForm(e)}
 									id="email"
-									placeholder="name@example.com"
 									type="email"
+									name="email"
+									placeholder="name@example.com"
 									autoCapitalize="none"
 									autoComplete="email"
 									autoCorrect="off"
@@ -92,8 +108,9 @@ export default function UserAuthForm() {
 								<Input
 									onChange={e => validateForm(e)}
 									id="password"
-									placeholder="Create a strong password"
 									type="password"
+									name="password"
+									placeholder="Create a strong password"
 									autoCapitalize="none"
 									autoComplete="password"
 									autoCorrect="off"
@@ -103,16 +120,19 @@ export default function UserAuthForm() {
 								/>
 							</Label>
 							<Button
-								disabled={isLoading}
+								aria-disabled={pending}
 								className="uppercase"
 								value="Validate"
 								type="submit"
 							>
-								{isLoading && (
+								{pending && (
 									<Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
 								)}
 								Create Account
 							</Button>
+							<p aria-live="polite" className="sr-only" role="status">
+								{state?.message}
+							</p>
 						</div>
 					</div>
 				</form>

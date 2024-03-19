@@ -1,24 +1,78 @@
 "use server"
+
+import { revalidatePath } from "next/cache"
 import db from "@/utils/db"
+import { z } from "zod"
 
-export const getFirstUser = async () => {
-	return await db.user.findFirst()
+export async function getFirstUser() {
+	const user = await db.user.findFirst()
+	return user
 }
 
-export const getAllUsers = async () => {
-	return await db.user.findMany()
-}
-
-export const createUser = async (formData: FormData) => {
+export async function createUser(
+	prevState: {
+		message: string
+	},
+	formData: FormData,
+) {
 	console.log(formData)
-	const rawFormData = {
-		customerId: formData.get("name"),
-		amount: formData.get("email"),
-		status: formData.get("password"),
-	}
-	console.log(rawFormData)
+	console.log(prevState)
+	const schema = z.object({
+		name: z.string().min(1),
+		email: z.string().min(1),
+		password: z.string().min(1),
+	})
+	const parse = schema.safeParse({
+		name: formData.get("name"),
+		email: formData.get("email"),
+		password: formData.get("password"),
+	})
 
-	return {
-		message: "Please enter a valid email",
+	if (!parse.success) {
+		return { message: "Failed to create User" }
+	}
+
+	const data = parse.data
+	console.log(data)
+	try {
+		await db.user.create({
+			data: {
+				name: data.name,
+				email: data.email,
+				password: data.password,
+			},
+		})
+		revalidatePath("/")
+		return { message: "Failed to create user" }
+	} catch (e) {
+		return { message: "Failed to create user" }
 	}
 }
+
+// export async function deleteTodo(
+// 	prevState: {
+// 		message: string
+// 	},
+// 	formData: FormData,
+// ) {
+// 	const schema = z.object({
+// 		id: z.string().min(1),
+// 		todo: z.string().min(1),
+// 	})
+// 	const data = schema.parse({
+// 		id: formData.get("id"),
+// 		todo: formData.get("todo"),
+// 	})
+
+// 	try {
+// 		await sql`
+//       DELETE FROM todos
+//       WHERE id = ${data.id};
+//     `
+
+// 		revalidatePath("/")
+// 		return { message: `Deleted todo ${data.todo}` }
+// 	} catch (e) {
+// 		return { message: "Failed to delete todo" }
+// 	}
+// }
