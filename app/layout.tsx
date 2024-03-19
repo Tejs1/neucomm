@@ -19,19 +19,14 @@ export default function RootLayout({
 }>) {
 	return (
 		<ClerkProvider>
-			<html lang="en">
+			<html lang="en" suppressHydrationWarning>
 				<body
 					className={
 						inter.className + " flex flex-col w-full items-center min-h-screen"
 					}
 				>
 					{" "}
-					<ThemeProvider
-						attribute="class"
-						defaultTheme="system"
-						enableSystem
-						disableTransitionOnChange
-					>
+					<ThemeProvider>
 						<NavBar />
 						{children}
 					</ThemeProvider>

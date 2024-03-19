@@ -19,13 +19,8 @@ import {
 } from "@/components/ui/navigation-menu"
 import { useClerk } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
+import { ThemeSwitch } from "@/components/ThemeSwitch"
 
-const ModeToggle = dynamic(
-	() => import("@/components/ModeToggle").then(mod => mod.ModeToggle),
-	{
-		ssr: false,
-	},
-)
 const components: { title: string; href: string; description: string }[] = [
 	{
 		title: "Alert Dialog",
@@ -151,7 +146,18 @@ export function NavBar() {
 					</NavigationMenuList>
 				</NavigationMenu>
 				<div className="flex flex-row">
-					<ModeToggle />
+					<React.Suspense
+						fallback={
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+							></svg>
+						}
+					>
+						<ThemeSwitch />
+					</React.Suspense>
 					<Search />
 					<ShoppingCart />
 				</div>
