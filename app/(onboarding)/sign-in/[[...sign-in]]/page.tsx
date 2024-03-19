@@ -3,8 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useFormState, useFormStatus } from "react-dom"
-import { createUser } from "@/utils/putActions"
+
 import { cn, constraints } from "@/lib/utils"
 
 import { Icons } from "@/components/icons"
@@ -12,22 +11,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-const initialState = {
-	message: "",
-}
-// function SubmitButton() {
-// 	return (
-// 		<button type="submit" aria-disabled={pending}>
-// 			Add
-// 		</button>
-// 	)
-// }
-
 export default function UserAuthForm() {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false)
 	const [isFormValid, setIsFormValid] = React.useState<boolean>(false)
-	const [state, formAction] = useFormState(createUser, initialState)
-	const { pending } = useFormStatus()
 	const router = useRouter()
 	const formRef = React.useRef<HTMLFormElement>(null)
 
@@ -37,7 +23,7 @@ export default function UserAuthForm() {
 
 		setTimeout(() => {
 			setIsLoading(false)
-			router.push("/verify")
+			router.push("/interests")
 		}, 300)
 	}
 
@@ -65,35 +51,27 @@ export default function UserAuthForm() {
 	return (
 		<main className="flex-grow flex h-full flex-col items-center  ">
 			<div className="grid gap-6 m-auto border rounded-3xl p-10">
-				<h1 className="text-[32px] font-semibold">Create your account</h1>
-				<form ref={formRef} action={formAction}>
+				<div className="flex items-center flex-col justify-start">
+					<h1 className="text-[32px] font-semibold">Login</h1>
+					<h2 className="text-2xl">
+						<span className="text-accent-foreground">Welcome back to </span>{" "}
+						Nuecomm
+					</h2>
+					<span className="text-muted-foreground">
+						The next gen business marketplace
+					</span>
+				</div>
+
+				<form ref={formRef} onSubmit={onSubmit}>
 					<div className="grid gap-2">
 						<div className="grid gap-8">
-							<Label htmlFor="name">
-								Name{" "}
-								<Input
-									onChange={e => validateForm(e)}
-									id="name"
-									type="name"
-									name="name"
-									placeholder="John Doe"
-									autoCapitalize="words"
-									autoComplete="name"
-									autoCorrect="off"
-									disabled={isLoading}
-									className="mt-2"
-									required
-								/>
-							</Label>
-
 							<Label htmlFor="email">
 								Email{" "}
 								<Input
 									onChange={e => validateForm(e)}
 									id="email"
-									type="email"
-									name="email"
 									placeholder="name@example.com"
+									type="email"
 									autoCapitalize="none"
 									autoComplete="email"
 									autoCorrect="off"
@@ -108,9 +86,8 @@ export default function UserAuthForm() {
 								<Input
 									onChange={e => validateForm(e)}
 									id="password"
+									placeholder="Enter your password"
 									type="password"
-									name="password"
-									placeholder="Create a strong password"
 									autoCapitalize="none"
 									autoComplete="password"
 									autoCorrect="off"
@@ -120,28 +97,25 @@ export default function UserAuthForm() {
 								/>
 							</Label>
 							<Button
-								aria-disabled={pending}
+								disabled={isLoading}
 								className="uppercase"
 								value="Validate"
 								type="submit"
 							>
-								{pending && (
+								{isLoading && (
 									<Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
 								)}
-								Create Account
+								Log In
 							</Button>
-							<p aria-live="polite" className="sr-only" role="status">
-								{state?.message}
-							</p>
 						</div>
 					</div>
 				</form>
 
 				<div className="relative flex justify-center text-xs ">
-					<span className="bg-background px-2 text-muted-foreground">
-						Have an account?{" "}
-						<Link href="login" className="uppercase font-bold">
-							Log In
+					<span className="bg-background px-2 text-accent-foreground">
+						Don’t have an Account?{" "}
+						<Link href="sign-up" className="uppercase font-bold">
+							Sign up
 						</Link>
 					</span>
 				</div>

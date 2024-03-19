@@ -1,4 +1,5 @@
 "use server"
+// import { useSignUp } from "@clerk/nextjs"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 import db from "@/utils/dbDirect"
@@ -21,25 +22,27 @@ export async function createUser(
 	})
 
 	if (!parse.success) {
-		return { message: "Failed to create User" }
+		return { message: "Failed to create User", email: "" }
 	}
 
 	const data = parse.data
 	console.log(data)
 	try {
-		await db.user.create({
-			data: {
-				name: data.name,
-				email: data.email,
-				password: data.password,
-			},
-		})
+		// await db.user.create({
+		// 	data: {
+		// 		name: data.name,
+		// 		email: data.email,
+		// 		password: data.password,
+		// 	},
+		// })
+		// fake timeout
+		await new Promise(resolve => setTimeout(resolve, 3000))
 		revalidatePath("/")
 
-		return { message: "created User" }
+		return { message: "created User", email: data.email }
 	} catch (e) {
 		console.error(e)
-		return { message: "Failed to create User" }
+		return { message: "Failed to create User", email: "" }
 	}
 }
 
