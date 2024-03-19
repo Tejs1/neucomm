@@ -1,5 +1,5 @@
 "use server"
-
+import { permanentRedirect, redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 import db from "@/utils/db"
 import { z } from "zod"
@@ -15,8 +15,6 @@ export async function createUser(
 	},
 	formData: FormData,
 ) {
-	console.log(formData)
-	console.log(prevState)
 	const schema = z.object({
 		name: z.string().min(1),
 		email: z.string().min(1),
@@ -35,19 +33,41 @@ export async function createUser(
 	const data = parse.data
 	console.log(data)
 	try {
-		await db.user.create({
-			data: {
-				name: data.name,
-				email: data.email,
-				password: data.password,
-			},
-		})
-		revalidatePath("/")
-		return { message: "Failed to create user" }
+		await sendOTP(data.email)
+		console.log("OTP sent")
+		revalidatePath("/signup")
+		permanentRedirect(`/verify`)
 	} catch (e) {
-		return { message: "Failed to create user" }
+		console.error(e)
+		return { message: "Failed to create User" }
 	}
 }
+
+export async function sendOTP(email: string) {
+	const schema = z.object({
+		email: z.string().email(),
+	})
+	const data = schema.parse({
+		email: email,
+	})
+
+	console.log(data)
+	return { message: "OTP sent to " + data.email }
+}
+
+// try {
+// 	await db.user.create({
+// 		data: {
+// 			name: data.name,
+// 			email: data.email,
+// 			password: data.password,
+// 		},
+// 	})
+// 	revalidatePath("/")
+// 	return { message: "Failed to create user" }
+// } catch (e) {
+// 	return { message: "Failed to create user" }
+// }
 
 // export async function deleteTodo(
 // 	prevState: {

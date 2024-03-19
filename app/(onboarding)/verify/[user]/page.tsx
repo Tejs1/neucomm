@@ -6,12 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-export default function UserAuthForm({
-	searchParams,
-}: {
-	searchParams: { user: string }
-}) {
-	console.log(searchParams.user)
+export default function UserAuthForm(props: { user: any }) {
+	console.log(props)
 	const [isLoading, setIsLoading] = useState<boolean>(false)
 	const [otpValues, setOtpValues] = useState<string[]>(Array(8).fill(""))
 	const router = useRouter()
