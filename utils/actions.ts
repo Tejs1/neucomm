@@ -8,6 +8,10 @@ export async function getFirstUser() {
 	const user = await db.user.findFirst()
 	return user
 }
+export async function getAllUsers() {
+	const users = await db.user.findMany()
+	return users
+}
 
 export async function createUser(
 	prevState: {
