@@ -25,7 +25,7 @@ export async function createUser(
 ) {
 	const schema = z.object({
 		name: z.string().min(1),
-		email: z.string().min(1),
+		email: z.string().email().min(1),
 		password: z.string().min(1),
 	})
 	const parse = schema.safeParse({
@@ -48,8 +48,7 @@ export async function createUser(
 				password: data.password,
 			},
 		})
-		await sendOTP(data.email)
-		console.log("OTP sent")
+
 		return { message: "created User" }
 	} catch (e) {
 		console.error(e)
