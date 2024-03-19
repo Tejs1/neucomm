@@ -69,10 +69,13 @@ export function NavBar() {
 				<Link href="help"> Help</Link>
 				<Link href="orders"> orders</Link>
 				<Link href="profile"> HI John</Link>
+				<Link href="sigunp"> SignUp</Link>
+				<Link href="login"> Login</Link>
+				<Link href="verify"> Verify</Link>
 			</div>
 			<div className="flex flex-row justify-between w-full items-center">
 				<NavigationMenu>
-					<Link href="/docs" legacyBehavior passHref>
+					<Link href="/" legacyBehavior passHref>
 						<NavigationMenuLink className={navigationMenuTriggerStyle()}>
 							<div className="font-bold text-[32px] uppercase">NueComm</div>
 						</NavigationMenuLink>
