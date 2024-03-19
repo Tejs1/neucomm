@@ -1,5 +1,6 @@
 import { getAllUsers, getFirstUser } from "@/utils/getActions"
 import Image from "next/image"
+//dont cache this page
 
 export default async function Home() {
 	const users = await getAllUsers()

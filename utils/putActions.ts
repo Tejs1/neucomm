@@ -1,4 +1,5 @@
 "use server"
+import { revalidatePath } from "next/cache"
 import { z } from "zod"
 import db from "@/utils/dbDirect"
 
@@ -33,6 +34,7 @@ export async function createUser(
 				password: data.password,
 			},
 		})
+		revalidatePath("/")
 
 		return { message: "created User" }
 	} catch (e) {
