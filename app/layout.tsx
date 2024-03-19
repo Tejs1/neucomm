@@ -22,8 +22,7 @@ export default function RootLayout({
 			<html lang="en">
 				<body
 					className={
-						inter.className +
-						" flex flex-col w-full justify-center items-center min-h-screen"
+						inter.className + " flex flex-col w-full items-center min-h-screen"
 					}
 				>
 					{" "}
