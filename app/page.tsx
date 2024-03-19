@@ -1,4 +1,4 @@
-import { getAllUsers, getFirstUser } from "@/utils/actions"
+import { getAllUsers, getFirstUser } from "@/utils/getActions"
 import Image from "next/image"
 
 export default async function Home() {

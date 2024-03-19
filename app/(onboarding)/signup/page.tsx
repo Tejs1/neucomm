@@ -4,7 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useFormState, useFormStatus } from "react-dom"
-import { createUser } from "@/utils/actions"
+import { createUser } from "@/utils/putActions"
 import { cn, constraints } from "@/lib/utils"
 
 import { Icons } from "@/components/icons"
