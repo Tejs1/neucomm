@@ -50,6 +50,7 @@ export async function createUser(
 		})
 		await sendOTP(data.email)
 		console.log("OTP sent")
+		return { message: "created User" }
 	} catch (e) {
 		console.error(e)
 		return { message: "Failed to create User" }
