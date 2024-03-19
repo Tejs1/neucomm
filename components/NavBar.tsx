@@ -17,6 +17,8 @@ import {
 	NavigationMenuTrigger,
 	navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
+import { useClerk } from "@clerk/nextjs"
+import { useRouter } from "next/navigation"
 
 const ModeToggle = dynamic(
 	() => import("@/components/ModeToggle").then(mod => mod.ModeToggle),
@@ -63,15 +65,19 @@ const components: { title: string; href: string; description: string }[] = [
 ]
 
 export function NavBar() {
+	const { signOut } = useClerk()
+	const router = useRouter()
 	return (
 		<div className="w-full">
-			<div className="flex w-full items-center justify-end">
+			<div className="flex w-full items-center justify-end gap-4 pt-1 pr-4">
+				<Link href="sign-up"> SignUp</Link>
+				<Link href="sign-in"> Login</Link>
+				<button onClick={() => signOut(() => router.push("/"))}>
+					Sign Out
+				</button>
 				<Link href="help"> Help</Link>
 				<Link href="orders"> orders</Link>
 				<Link href="profile"> HI John</Link>
-				<Link href="sigunp"> SignUp</Link>
-				<Link href="login"> Login</Link>
-				<Link href="verify"> Verify</Link>
 			</div>
 			<div className="flex flex-row justify-between w-full items-center">
 				<NavigationMenu>
