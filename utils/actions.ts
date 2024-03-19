@@ -3,11 +3,11 @@ export const config = {
 }
 import { permanentRedirect, redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
-import { PrismaClient } from "@prisma/client"
+// import { PrismaClient } from "@prisma/client"
+// const db = new PrismaClient()
 import db from "@/utils/db"
 import { z } from "zod"
 
-// const db = new PrismaClient()
 export async function getFirstUser() {
 	const user = await db.user.findFirst()
 	return user
@@ -41,10 +41,15 @@ export async function createUser(
 	const data = parse.data
 	console.log(data)
 	try {
+		await db.user.create({
+			data: {
+				name: data.name,
+				email: data.email,
+				password: data.password,
+			},
+		})
 		await sendOTP(data.email)
 		console.log("OTP sent")
-		revalidatePath("/signup")
-		permanentRedirect(`/verify`)
 	} catch (e) {
 		console.error(e)
 		return { message: "Failed to create User" }
