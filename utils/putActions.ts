@@ -54,3 +54,49 @@ export async function sendOTP(email: string) {
 
 	return { message: "OTP sent to " + data.email }
 }
+
+export async function updateUserCategoryPreference(
+	userId: string,
+	categoryId: string,
+	selected: boolean,
+) {
+	await db.userCategory.update({
+		where: {
+			userId_categoryId: {
+				userId,
+				categoryId,
+			},
+		},
+		data: {
+			selected,
+		},
+	})
+}
+export async function updateUserCategoriesPreference(
+	clerkId: string,
+	categoryIds: string[],
+	selected: boolean,
+) {
+	try {
+		const user = await db.user.findUnique({
+			where: { clerkId },
+		})
+		const userId = user?.id as string
+
+		await Promise.all(
+			categoryIds.map(categoryId =>
+				updateUserCategoryPreference(userId, categoryId, selected),
+			),
+		)
+
+		return { message: "Updated User Category Preferences" }
+	} catch (e) {
+		console.error(e)
+		return { message: "Failed to update User Category Preferences" }
+	}
+}
+
+export async function getAllCategories() {
+	const categories = await db.category.findMany()
+	return categories
+}

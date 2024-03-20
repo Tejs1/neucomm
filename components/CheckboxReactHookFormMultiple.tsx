@@ -15,6 +15,7 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form"
+import { updateUserCategoriesPreference } from "@/utils/putActions"
 
 const FormSchema = z.object({
 	items: z.array(z.string()).refine(value => value.some(item => item), {
@@ -24,18 +25,30 @@ const FormSchema = z.object({
 
 export function CheckboxReactHookFormMultiple({
 	items,
+	clerkId,
 }: {
 	items: { id: string; label: string }[]
+	clerkId: string
 }) {
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
-			items: ["recents", "home"],
+			items: [],
 		},
 	})
 
 	function onSubmit(data: z.infer<typeof FormSchema>) {
-		console.log(data)
+		console.log(data.items)
+		const update = updateUserCategoriesPreference(clerkId, data.items, true)
+		// disable the button while submitting
+
+		update
+			.then(res => {
+				console.log("updated", res)
+			})
+			.catch(e => {
+				console.error(e)
+			})
 	}
 
 	return (
@@ -68,7 +81,7 @@ export function CheckboxReactHookFormMultiple({
 																? field.onChange([...field.value, item.id])
 																: field.onChange(
 																		field.value?.filter(
-																			value => value !== item.id,
+																			(value: string) => value !== item.id,
 																		),
 																  )
 														}}
@@ -86,6 +99,7 @@ export function CheckboxReactHookFormMultiple({
 						</FormItem>
 					)}
 				/>
+				<Button type="submit">Submit</Button>
 			</form>
 		</Form>
 	)
