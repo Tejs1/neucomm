@@ -32,6 +32,7 @@ model Category {
 model UserCategory {
   userId     String
   categoryId String
+  selected   Boolean  @default(false)
   user       User     @relation(fields: [userId], references: [id])
   category   Category @relation(fields: [categoryId], references: [id])
 
