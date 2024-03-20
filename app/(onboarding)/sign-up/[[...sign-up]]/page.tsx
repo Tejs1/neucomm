@@ -18,13 +18,6 @@ const initialState = {
 	message: "",
 	email: "",
 }
-// function SubmitButton() {
-// 	return (
-// 		<button type="submit" aria-disabled={isLoading}>
-// 			Add
-// 		</button>
-// 	)
-// }
 
 export default function UserAuthForm() {
 	const [name, setName] = useState("")

@@ -1,5 +1,5 @@
 "use client"
-
+import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -15,27 +15,55 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form"
+import {
+	updateUserCategoriesPreference,
+	updateUserCategoryPreference,
+} from "@/utils/putActions"
 
 const FormSchema = z.object({
-	items: z.array(z.string()).refine(value => value.some(item => item), {
-		message: "You have to select at least one item.",
-	}),
+	items: z.record(z.boolean()),
 })
 
 export function CheckboxReactHookFormMultiple({
 	items,
+	userId,
 }: {
-	items: { id: string; label: string }[]
+	items: { id: string; label: string; selected: boolean }[]
+	userId: string
 }) {
+	const router = useRouter()
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
-			items: ["recents", "home"],
+			items: items.reduce(
+				(acc, item) => ({ ...acc, [item.id]: item.selected }),
+				{},
+			),
 		},
 	})
 
 	function onSubmit(data: z.infer<typeof FormSchema>) {
-		console.log(data)
+		const items = Object.keys(data.items)
+		Promise.all(
+			items.map(item =>
+				updateUserCategoryPreference(userId, item, data.items[item]),
+			),
+		).then(res => {
+			console.log("updated", res)
+			// router refresh
+			router.refresh()
+		})
+
+		// const update = updateUserCategoryPreference(userId, selectedItems, true)
+		// // disable the button while submitting
+
+		// update
+		// 	.then(res => {
+		// 		console.log("updated", res)
+		// 	})
+		// 	.catch(e => {
+		// 		console.error(e)
+		// 	})
 	}
 
 	return (
@@ -62,15 +90,12 @@ export function CheckboxReactHookFormMultiple({
 											>
 												<FormControl>
 													<Checkbox
-														checked={field.value?.includes(item.id)}
+														checked={field.value[item.id]}
 														onCheckedChange={checked => {
-															return checked
-																? field.onChange([...field.value, item.id])
-																: field.onChange(
-																		field.value?.filter(
-																			value => value !== item.id,
-																		),
-																  )
+															field.onChange({
+																...field.value,
+																[item.id]: checked,
+															})
 														}}
 													/>
 												</FormControl>
@@ -86,6 +111,7 @@ export function CheckboxReactHookFormMultiple({
 						</FormItem>
 					)}
 				/>
+				<Button type="submit">Submit</Button>
 			</form>
 		</Form>
 	)
