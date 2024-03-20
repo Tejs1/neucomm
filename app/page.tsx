@@ -7,7 +7,7 @@ export default async function Home() {
 	console.log(users)
 
 	return (
-		<main className="flex min-h-screen flex-col items-center justify-center ">
+		<main className="flex flex-col items-center justify-center ">
 			{users.map(user => (
 				<div key={user.id}>
 					<h1>{user.name}</h1>

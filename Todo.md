@@ -3,17 +3,28 @@
 ## Features
 
 - [ ] add `react-query` for data fetching
-- [ ] add `next-auth` for authentication
+- [x] add `clerk-auth` for authentication
 - [ ] add `prisma` for database
-- [ ] add `next-iron-session` for session management
+- [ ] investigate the signin/up responses, to see if there was an error if the
+      user needs to complete more steps.
+- [ ] add `otp timeout` feature
+- [ ] add `forgot-password` feature
 
 ## Fix
 
+- [ ] if user is not in `clerk db` but is in `prisma db`, then delete user from
+      `prisma db` and redirect to signup page
+- [ ] store user name in db
+
 - [ ] fix Extra attributes from the server for `next-themes`
+- [ ] move `clerk-auth` logic to server actions instead of client side
 
 ## Optmizations
 
-- [ ] use `react-hook-form` and `zod` for form validation
+- [ ] add `next-iron-session` for session management
+- [ ] use `neondb-edge` insted of `prisma accelerate` for form validation
+- [ ] use `react-hook-form` for form validation
+- [x] use `zod` for form validation
 - [ ] use `next-optimized-images` for image optimization
 - [ ] use `next-seo` for SEO
 - [x] use `next-themes` for dark mode

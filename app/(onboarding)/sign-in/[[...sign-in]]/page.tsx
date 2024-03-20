@@ -2,9 +2,10 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useSignIn } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
-import { useFormState, useFormStatus } from "react-dom"
-import { createUser } from "@/utils/putActions"
+import { z } from "zod"
+
 import { cn, constraints } from "@/lib/utils"
 
 import { Icons } from "@/components/icons"
@@ -12,33 +13,58 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-const initialState = {
-	message: "",
-}
-// function SubmitButton() {
-// 	return (
-// 		<button type="submit" aria-disabled={pending}>
-// 			Add
-// 		</button>
-// 	)
-// }
-
 export default function UserAuthForm() {
+	const { isLoaded, signIn, setActive } = useSignIn()
 	const [isLoading, setIsLoading] = React.useState<boolean>(false)
 	const [isFormValid, setIsFormValid] = React.useState<boolean>(false)
-	const [state, formAction] = useFormState(createUser, initialState)
-	const { pending } = useFormStatus()
 	const router = useRouter()
 	const formRef = React.useRef<HTMLFormElement>(null)
 
 	async function onSubmit(event: React.SyntheticEvent) {
 		event.preventDefault()
-		setIsLoading(true)
+		console.log("submitting")
+		if (!isLoaded) {
+			return
+		}
+		const form = event.currentTarget as HTMLFormElement
+		if (!form.checkValidity()) {
+			return
+		}
+		const formData = new FormData(form)
+		const emailAddress = formData.get("email") as string
+		const password = formData.get("password") as string
+		console.log(emailAddress, password)
+		const schema = z.object({
+			email: z.string().email(),
+			password: z.string().min(8),
+		})
 
-		setTimeout(() => {
-			setIsLoading(false)
-			router.push("/verify")
-		}, 300)
+		const parse = schema.safeParse({
+			email: emailAddress,
+			password: password,
+		})
+		console.log(parse)
+		if (!parse.success) {
+			throw new Error("Invalid form data")
+		}
+		console.log("creating")
+		try {
+			console.log("creating...")
+			const result = await signIn.create({
+				identifier: emailAddress,
+				password,
+			})
+
+			if (result.status === "complete") {
+				await setActive({ session: result.createdSessionId })
+				router.push("/verify")
+			} else {
+				/*Investigate why the sign-in hasn't completed */
+				console.log(result, "result")
+			}
+		} catch (err: any) {
+			console.error("error", err)
+		}
 	}
 
 	function validateForm(e: React.ChangeEvent<HTMLInputElement>) {
@@ -64,28 +90,21 @@ export default function UserAuthForm() {
 
 	return (
 		<main className="flex-grow flex h-full flex-col items-center  ">
-			<div className="grid gap-6 m-auto border rounded-3xl p-10">
-				<h1 className="text-[32px] font-semibold">Create your account</h1>
-				<form ref={formRef} action={formAction}>
+			<div className="grid gap-6 m-auto border rounded-3xl p-10 w-[400px]">
+				<div className="flex items-center flex-col justify-start">
+					<h1 className="text-[32px] font-semibold">Login</h1>
+					<h2 className="text-2xl">
+						<span className="text-accent-foreground">Welcome back to </span>{" "}
+						Nuecomm
+					</h2>
+					<span className="text-muted-foreground">
+						The next gen business marketplace
+					</span>
+				</div>
+
+				<form ref={formRef} onSubmit={onSubmit}>
 					<div className="grid gap-2">
 						<div className="grid gap-8">
-							<Label htmlFor="name">
-								Name{" "}
-								<Input
-									onChange={e => validateForm(e)}
-									id="name"
-									type="name"
-									name="name"
-									placeholder="John Doe"
-									autoCapitalize="words"
-									autoComplete="name"
-									autoCorrect="off"
-									disabled={isLoading}
-									className="mt-2"
-									required
-								/>
-							</Label>
-
 							<Label htmlFor="email">
 								Email{" "}
 								<Input
@@ -110,7 +129,7 @@ export default function UserAuthForm() {
 									id="password"
 									type="password"
 									name="password"
-									placeholder="Create a strong password"
+									placeholder="Enter your password"
 									autoCapitalize="none"
 									autoComplete="password"
 									autoCorrect="off"
@@ -120,28 +139,25 @@ export default function UserAuthForm() {
 								/>
 							</Label>
 							<Button
-								aria-disabled={pending}
-								className="uppercase"
+								disabled={isLoading}
+								className="uppercase font-bold"
 								value="Validate"
 								type="submit"
 							>
-								{pending && (
+								{isLoading && (
 									<Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
 								)}
-								Create Account
+								Log In
 							</Button>
-							<p aria-live="polite" className="sr-only" role="status">
-								{state?.message}
-							</p>
 						</div>
 					</div>
 				</form>
 
-				<div className="relative flex justify-center text-xs ">
-					<span className="bg-background px-2 text-muted-foreground">
-						Have an account?{" "}
-						<Link href="login" className="uppercase font-bold">
-							Log In
+				<div className="relative flex justify-center text-sm  pt-[38px]">
+					<span className="bg-background px-2 text-accent-foreground">
+						Don&apos;t have an Account?{" "}
+						<Link href="sign-up" className="uppercase font-bold m-1">
+							Sign up
 						</Link>
 					</span>
 				</div>
