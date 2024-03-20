@@ -12,7 +12,7 @@
 
 ## Fix
 
-- [ ] store user name in db
+- [x] store user name in db
 - [ ] if user is not in `clerk db` but is in `prisma db`, then delete user from
       `prisma db` and redirect to signup page
 
