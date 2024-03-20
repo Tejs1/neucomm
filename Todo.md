@@ -12,9 +12,9 @@
 
 ## Fix
 
+- [x] store user name in db
 - [ ] if user is not in `clerk db` but is in `prisma db`, then delete user from
       `prisma db` and redirect to signup page
-- [ ] store user name in db
 
 - [ ] fix Extra attributes from the server for `next-themes`
 - [ ] move `clerk-auth` logic to server actions instead of client side

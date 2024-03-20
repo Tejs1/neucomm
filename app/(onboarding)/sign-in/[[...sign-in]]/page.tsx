@@ -22,7 +22,7 @@ export default function UserAuthForm() {
 
 	async function onSubmit(event: React.SyntheticEvent) {
 		event.preventDefault()
-		console.log("submitting")
+
 		if (!isLoaded) {
 			return
 		}
@@ -33,7 +33,7 @@ export default function UserAuthForm() {
 		const formData = new FormData(form)
 		const emailAddress = formData.get("email") as string
 		const password = formData.get("password") as string
-		console.log(emailAddress, password)
+
 		const schema = z.object({
 			email: z.string().email(),
 			password: z.string().min(8),
@@ -43,13 +43,12 @@ export default function UserAuthForm() {
 			email: emailAddress,
 			password: password,
 		})
-		console.log(parse)
+
 		if (!parse.success) {
 			throw new Error("Invalid form data")
 		}
-		console.log("creating")
+
 		try {
-			console.log("creating...")
 			const result = await signIn.create({
 				identifier: emailAddress,
 				password,

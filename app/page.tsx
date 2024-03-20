@@ -4,7 +4,6 @@ import Image from "next/image"
 
 export default async function Home() {
 	const users = await getAllUsers()
-	console.log(users)
 
 	return (
 		<main className="flex flex-col items-center justify-center ">
