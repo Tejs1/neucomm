@@ -16,8 +16,28 @@ model User {
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   preferences UserPreferences?
-  categories  Category[]
+  categories  UserCategory[]
 }
+
+
+
+model Category {
+  id        String         @id @default(uuid())
+  name      String         @unique
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  users     UserCategory[]
+}
+
+model UserCategory {
+  userId     String
+  categoryId String
+  user       User     @relation(fields: [userId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@id([userId, categoryId])
+}
+
 
 model UserPreferences {
   id         String   @id @default(uuid())
@@ -44,12 +64,4 @@ model UserPreferences {
   settings   Json?
 
   @@index([userId], name: "userPreferences_userId")
-}
-
-model Category {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  users     User[]
 }
