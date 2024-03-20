@@ -33,7 +33,7 @@ export default function UserAuthForm() {
 		const formData = new FormData(form)
 		const emailAddress = formData.get("email") as string
 		const password = formData.get("password") as string
-
+		console.log(emailAddress, password)
 		const schema = z.object({
 			email: z.string().email(),
 			password: z.string().min(8),
@@ -43,12 +43,13 @@ export default function UserAuthForm() {
 			email: emailAddress,
 			password: password,
 		})
-
+		console.log(parse)
 		if (!parse.success) {
 			throw new Error("Invalid form data")
 		}
-
+		console.log("creating")
 		try {
+			console.log("creating...")
 			const result = await signIn.create({
 				identifier: emailAddress,
 				password,
@@ -89,7 +90,7 @@ export default function UserAuthForm() {
 
 	return (
 		<main className="flex-grow flex h-full flex-col items-center  ">
-			<div className="grid gap-6 m-auto border rounded-3xl p-10">
+			<div className="grid gap-6 m-auto border rounded-3xl p-10 w-[400px]">
 				<div className="flex items-center flex-col justify-start">
 					<h1 className="text-[32px] font-semibold">Login</h1>
 					<h2 className="text-2xl">
@@ -139,7 +140,7 @@ export default function UserAuthForm() {
 							</Label>
 							<Button
 								disabled={isLoading}
-								className="uppercase"
+								className="uppercase font-bold"
 								value="Validate"
 								type="submit"
 							>
@@ -152,10 +153,10 @@ export default function UserAuthForm() {
 					</div>
 				</form>
 
-				<div className="relative flex justify-center text-xs ">
+				<div className="relative flex justify-center text-sm  pt-[38px]">
 					<span className="bg-background px-2 text-accent-foreground">
-						DonU+2019t have an Account?{" "}
-						<Link href="sign-up" className="uppercase font-bold">
+						Don&apos;t have an Account?{" "}
+						<Link href="sign-up" className="uppercase font-bold m-1">
 							Sign up
 						</Link>
 					</span>

@@ -25,11 +25,10 @@ export default function RootLayout({
 						inter.className + " flex flex-col w-full items-center min-h-screen"
 					}
 				>
-					{" "}
 					<ThemeProvider>
 						<NavBar />
-						{children}
 					</ThemeProvider>
+					{children}
 				</body>
 			</html>
 		</ClerkProvider>

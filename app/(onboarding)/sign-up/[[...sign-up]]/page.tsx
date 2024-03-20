@@ -125,7 +125,7 @@ export default function UserAuthForm() {
 	return (
 		<main className="flex-grow flex h-full flex-col items-center  justify-center">
 			{!pendingVerification && (
-				<div className="grid gap-6 m-auto border rounded-3xl p-10">
+				<div className="grid gap-6 m-auto border rounded-3xl p-10 w-[400px]">
 					<h1 className="text-[32px] font-semibold">Create your account</h1>
 					<form ref={formRef} action={formAction} onSubmit={onSubmit}>
 						<div className="grid gap-2">
@@ -182,7 +182,7 @@ export default function UserAuthForm() {
 								</Label>
 								<Button
 									aria-disabled={isLoading}
-									className="uppercase"
+									className="uppercase font-bold"
 									value="Validate"
 									type="submit"
 								>
@@ -198,10 +198,10 @@ export default function UserAuthForm() {
 						</div>
 					</form>
 
-					<div className="relative flex justify-center text-xs ">
-						<span className="bg-background px-2 text-muted-foreground">
+					<div className="relative flex justify-center text-sm ">
+						<span className="bg-background px-2 text-accent-foreground">
 							Have an account?{" "}
-							<Link href="sign-in" className="uppercase font-bold">
+							<Link href="sign-in" className="uppercase font-bold m-1">
 								Log In
 							</Link>
 						</span>
