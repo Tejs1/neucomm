@@ -18,9 +18,7 @@ import {
 import { updateUserCategoriesPreference } from "@/utils/putActions"
 
 const FormSchema = z.object({
-	items: z.array(z.string()).refine(value => value.some(item => item), {
-		message: "You have to select at least one item.",
-	}),
+	items: z.record(z.boolean()),
 })
 
 export function CheckboxReactHookFormMultiple({
@@ -33,22 +31,25 @@ export function CheckboxReactHookFormMultiple({
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
-			items: [],
+			items: items.reduce((acc, item) => ({ ...acc, [item.id]: false }), {}),
 		},
 	})
 
 	function onSubmit(data: z.infer<typeof FormSchema>) {
 		console.log(data.items)
-		const update = updateUserCategoriesPreference(clerkId, data.items, true)
+		// const selectedItems = Object.keys(data.items).filter(
+		// 	itemId => data.items[itemId],
+		// )
+		// const update = updateUserCategoriesPreference(clerkId, selectedItems, true)
 		// disable the button while submitting
 
-		update
-			.then(res => {
-				console.log("updated", res)
-			})
-			.catch(e => {
-				console.error(e)
-			})
+		// update
+		// 	.then(res => {
+		// 		console.log("updated", res)
+		// 	})
+		// 	.catch(e => {
+		// 		console.error(e)
+		// 	})
 	}
 
 	return (
@@ -75,15 +76,12 @@ export function CheckboxReactHookFormMultiple({
 											>
 												<FormControl>
 													<Checkbox
-														checked={field.value?.includes(item.id)}
+														checked={field.value[item.id]}
 														onCheckedChange={checked => {
-															return checked
-																? field.onChange([...field.value, item.id])
-																: field.onChange(
-																		field.value?.filter(
-																			(value: string) => value !== item.id,
-																		),
-																  )
+															field.onChange({
+																...field.value,
+																[item.id]: checked,
+															})
 														}}
 													/>
 												</FormControl>
