@@ -65,7 +65,9 @@ export default function UserAuthForm() {
 			})
 
 			// send the email.
-			await signUp.prepareEmailAddressVerification({ strategy: "email_code" })
+			await signUp.prepareEmailAddressVerification({
+				strategy: "email_code",
+			})
 
 			// change the UI to our pending section.
 			setIsLoading(false)
@@ -94,7 +96,7 @@ export default function UserAuthForm() {
 			}
 			if (completeSignUp.status === "complete") {
 				await setActive({ session: completeSignUp.createdSessionId })
-				router.push("/verify")
+				router.push("/verify?name=" + name)
 			}
 		} catch (err: any) {
 			console.error(JSON.stringify(err, null, 2))
