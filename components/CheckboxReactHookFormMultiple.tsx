@@ -1,5 +1,5 @@
 "use client"
-
+import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -15,7 +15,10 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form"
-import { updateUserCategoriesPreference } from "@/utils/putActions"
+import {
+	updateUserCategoriesPreference,
+	updateUserCategoryPreference,
+} from "@/utils/putActions"
 
 const FormSchema = z.object({
 	items: z.record(z.boolean()),
@@ -23,25 +26,36 @@ const FormSchema = z.object({
 
 export function CheckboxReactHookFormMultiple({
 	items,
-	clerkId,
+	userId,
 }: {
-	items: { id: string; label: string }[]
-	clerkId: string
+	items: { id: string; label: string; selected: boolean }[]
+	userId: string
 }) {
+	const router = useRouter()
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
-			items: items.reduce((acc, item) => ({ ...acc, [item.id]: false }), {}),
+			items: items.reduce(
+				(acc, item) => ({ ...acc, [item.id]: item.selected }),
+				{},
+			),
 		},
 	})
 
 	function onSubmit(data: z.infer<typeof FormSchema>) {
-		console.log(data.items)
-		// const selectedItems = Object.keys(data.items).filter(
-		// 	itemId => data.items[itemId],
-		// )
-		// const update = updateUserCategoriesPreference(clerkId, selectedItems, true)
-		// disable the button while submitting
+		const items = Object.keys(data.items)
+		Promise.all(
+			items.map(item =>
+				updateUserCategoryPreference(userId, item, data.items[item]),
+			),
+		).then(res => {
+			console.log("updated", res)
+			// router refresh
+			router.refresh()
+		})
+
+		// const update = updateUserCategoryPreference(userId, selectedItems, true)
+		// // disable the button while submitting
 
 		// update
 		// 	.then(res => {

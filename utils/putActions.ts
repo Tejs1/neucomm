@@ -60,7 +60,7 @@ export async function updateUserCategoryPreference(
 	categoryId: string,
 	selected: boolean,
 ) {
-	await db.userCategory.update({
+	const category = await db.userCategory.update({
 		where: {
 			userId_categoryId: {
 				userId,
@@ -71,18 +71,15 @@ export async function updateUserCategoryPreference(
 			selected,
 		},
 	})
+
+	return category
 }
 export async function updateUserCategoriesPreference(
-	clerkId: string,
+	userId: string,
 	categoryIds: string[],
 	selected: boolean,
 ) {
 	try {
-		const user = await db.user.findUnique({
-			where: { clerkId },
-		})
-		const userId = user?.id as string
-
 		await Promise.all(
 			categoryIds.map(categoryId =>
 				updateUserCategoryPreference(userId, categoryId, selected),
@@ -99,4 +96,73 @@ export async function updateUserCategoriesPreference(
 export async function getAllCategories() {
 	const categories = await db.category.findMany()
 	return categories
+}
+
+export async function getUserCategories(clerkId: string) {
+	const user = await db.user.findUnique({
+		where: { clerkId },
+	})
+	const userId = user!.id as string
+	const data = await db.user
+		.findUnique({ where: { id: userId } })
+		.categories()
+		.then(res =>
+			res
+				? res.map(category => ({
+						id: category.categoryId,
+						name: category.name,
+						selected: category.selected,
+				  }))
+				: [],
+		)
+	return { userId, data }
+}
+
+export async function seedAllUserCategories() {
+	const users = await db.user.findMany()
+	await Promise.all(users.map(user => seedUserCategories(null, user.id)))
+}
+
+export async function seedUserCategories(
+	clerkId: string | null,
+	userID: string,
+) {
+	try {
+		let ID = ""
+		if (clerkId) {
+			const user = await db.user.findUnique({
+				where: { clerkId },
+			})
+			ID = user ? user.id : ""
+		} else {
+			ID = userID
+		}
+		const allCategories = await db.category.findMany()
+		await db.$transaction(
+			allCategories.map(category =>
+				db.userCategory.upsert({
+					where: {
+						userId_categoryId: {
+							userId: ID,
+							categoryId: category.id,
+						},
+					},
+					update: {
+						userId: ID,
+						categoryId: category.id,
+						name: category.name,
+						selected: false,
+					},
+					create: {
+						userId: ID,
+						categoryId: category.id,
+						name: category.name,
+						selected: false,
+					},
+				}),
+			),
+		)
+	} catch (error) {
+		console.error(error)
+	}
 }

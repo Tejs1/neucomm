@@ -20,16 +20,15 @@ const categoriesPerPage = 6
 export function Interests({
 	params,
 	categories,
-	clerkId,
+	userId,
 }: {
 	params: { page: string[] }
 	categories: {
 		id: string
 		name: string
-		createdAt: Date
-		updatedAt: Date
+		selected: boolean
 	}[]
-	clerkId: string
+	userId: string
 }) {
 	const currentPage =
 		params?.page && params?.page[1] ? parseInt(params.page[1], 10) : 1
@@ -43,6 +42,7 @@ export function Interests({
 		return {
 			id: category.id,
 			label: category.name,
+			selected: category.selected,
 		}
 	})
 
@@ -61,7 +61,7 @@ export function Interests({
 					<div>
 						<CheckboxReactHookFormMultiple
 							items={catrgoriesWithLabelAndID}
-							clerkId={clerkId}
+							userId={userId}
 						/>
 						<Pagination>
 							<PaginationContent>
