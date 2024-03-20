@@ -65,14 +65,14 @@ export function NavBar() {
 	return (
 		<div className="w-full">
 			<div className="flex w-full items-center justify-end gap-4 pt-1 pr-4">
-				<Link href="sign-up"> SignUp</Link>
-				<Link href="sign-in"> Login</Link>
+				<Link href="/sign-up"> SignUp</Link>
+				<Link href="/sign-in"> Login</Link>
 				<button onClick={() => signOut(() => router.push("/"))}>
 					Sign Out
 				</button>
-				<Link href="help"> Help</Link>
-				<Link href="orders"> orders</Link>
-				<Link href="profile"> HI John</Link>
+				<Link href="/help"> Help</Link>
+				<Link href="/orders"> orders</Link>
+				<Link href="/profile"> HI John</Link>
 			</div>
 			<div className="flex flex-row justify-between w-full items-center">
 				<NavigationMenu>
