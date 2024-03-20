@@ -86,7 +86,7 @@ export default function UserAuthForm() {
 			const completeSignUp = await signUp.attemptEmailAddressVerification({
 				code,
 			})
-			console.log(name)
+
 			if (completeSignUp.status !== "complete") {
 				/*  investigate the response, to see if there was an error
          or if the user needs to complete more steps.*/

@@ -52,6 +52,5 @@ export async function sendOTP(email: string) {
 		email: email,
 	})
 
-	console.log(data)
 	return { message: "OTP sent to " + data.email }
 }

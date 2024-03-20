@@ -13,7 +13,6 @@ export function UserVerifyForm({
 	email: string
 	onPressVerify: (code: string) => void
 }) {
-	console.log(email)
 	const [isLoading, setIsLoading] = useState<boolean>(false)
 	const [otpValues, setOtpValues] = useState<string[]>(Array(6).fill(""))
 	const router = useRouter()
@@ -48,7 +47,6 @@ export function UserVerifyForm({
 
 	const handleKeyDown = useCallback(
 		(e: KeyboardEvent<HTMLInputElement>, index: number) => {
-			console.log(e.key)
 			if (e.key === "Backspace") {
 				if (!otpValues[index]) focusPrevInputField(index)
 				else {
@@ -78,7 +76,6 @@ export function UserVerifyForm({
 
 	async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault()
-		console.log(otpValues.join(""))
 		onPressVerify(otpValues.join(""))
 	}
 	const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
