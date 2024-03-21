@@ -15,60 +15,57 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form"
-import {
-	updateUserCategoriesPreference,
-	updateUserCategoryPreference,
-} from "@/utils/putActions"
+import { UserState } from "@/lib/utils"
+import { updateUserCategoryPreference } from "@/utils/putActions"
 
 const FormSchema = z.object({
 	items: z.record(z.boolean()),
 })
-
 export function CheckboxReactHookFormMultiple({
 	items,
 	userId,
+	state,
 }: {
-	items: { id: string; label: string; selected: boolean }[]
+	items: { id: string; name: string; selected: boolean }[]
 	userId: string
+	state: UserState
 }) {
 	const router = useRouter()
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
-			items: items.reduce(
-				(acc, item) => ({ ...acc, [item.id]: item.selected }),
-				{},
-			),
+			items: state.data.reduce((acc, item) => {
+				acc[item.id] = item.selected
+				return acc
+			}, {} as Record<string, boolean>),
 		},
 	})
 
 	function onSubmit(data: z.infer<typeof FormSchema>) {
 		const items = Object.keys(data.items)
-		Promise.all(
-			items.map(item =>
-				updateUserCategoryPreference(userId, item, data.items[item]),
-			),
-		).then(res => {
-			console.log("updated", res)
-			// router refresh
-			router.refresh()
-		})
-
-		// const update = updateUserCategoryPreference(userId, selectedItems, true)
-		// // disable the button while submitting
-
-		// update
-		// 	.then(res => {
-		// 		console.log("updated", res)
-		// 	})
-		// 	.catch(e => {
-		// 		console.error(e)
-		// 	})
+		const selectedItems = items.filter(
+			item =>
+				data.items[item] !== state.data.find(i => i.id === item)?.selected,
+		)
+		console.log("submitting", selectedItems, userId)
+		if (selectedItems.length !== 0) {
+			Promise.all(
+				selectedItems.map(item =>
+					updateUserCategoryPreference(state.userId, item, data.items[item]),
+				),
+			).then(res => {
+				router.refresh()
+			})
+		}
 	}
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+			<form
+				onSubmit={form.handleSubmit(onSubmit)}
+				className="space-y-8"
+				key={items[0].id}
+			>
 				<FormField
 					control={form.control}
 					name="items"
@@ -100,7 +97,7 @@ export function CheckboxReactHookFormMultiple({
 													/>
 												</FormControl>
 												<FormLabel className="text-sm font-normal">
-													{item.label}
+													{item.name}
 												</FormLabel>
 											</FormItem>
 										)

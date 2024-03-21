@@ -16,3 +16,5 @@ export const constraints = {
 		"Minimum eight characters, at least one letter and one number",
 	],
 }
+export type UserCategoryData = { id: string; name: string; selected: boolean }[]
+export type UserState = { userId: string; data: UserCategoryData }
