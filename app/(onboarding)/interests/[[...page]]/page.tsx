@@ -1,16 +1,21 @@
-import { getAllCategories, getUserCategories } from "@/utils/putActions"
+import { getUserCategories } from "@/utils/putActions"
 import { Interests } from "./Interests"
 import { currentUser } from "@clerk/nextjs"
 
-export default async function InterestsPage({
-	params,
-}: {
-	params: { page: string[] }
-}) {
-	// const categories = await getAllCategories()
+const categoriesPerPage = 6
+export default async function InterestsPage() {
 	const user = await currentUser()
-	const { userId, data } = await getUserCategories(user!.id)
+	const { data, userId } = await getUserCategories(user!.id)
 	data.sort((a, b) => a.id.localeCompare(b.id))
 
-	return <Interests params={params} categories={data} userId={userId} />
+	const totalPages = Math.ceil(data.length / categoriesPerPage)
+
+	return (
+		<Interests
+			totalPages={totalPages}
+			userId={user!.id}
+			categoriesPerPage={categoriesPerPage}
+			state={{ data, userId }}
+		/>
+	)
 }
