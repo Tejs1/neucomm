@@ -1,8 +1,6 @@
 "use client"
 
-import * as React from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useState } from "react"
 import {
 	Pagination,
 	PaginationContent,
@@ -13,38 +11,24 @@ import {
 	PaginationPrevious,
 } from "@/components/ui/pagination"
 import { CheckboxReactHookFormMultiple } from "@/components/CheckboxReactHookFormMultiple"
-// import { categories } from "@/prisma/categories"
-
-const categoriesPerPage = 6
+import { UserState } from "@/lib/utils"
 
 export function Interests({
-	params,
-	categories,
+	totalPages,
+	categoriesPerPage,
 	userId,
+	state,
 }: {
-	params: { page: string[] }
-	categories: {
-		id: string
-		name: string
-		selected: boolean
-	}[]
+	totalPages: number
+	categoriesPerPage: number
 	userId: string
+	state: UserState
 }) {
-	const currentPage =
-		params?.page && params?.page[1] ? parseInt(params.page[1], 10) : 1
-
-	const totalPages = Math.ceil(categories.length / categoriesPerPage)
+	const [currentPage, setCurrentPage] = useState(1)
 
 	const start = (currentPage - 1) * categoriesPerPage
 	const end = start + categoriesPerPage
-	const paginatedCategories = categories.slice(start, end)
-	const catrgoriesWithLabelAndID = paginatedCategories.map(category => {
-		return {
-			id: category.id,
-			label: category.name,
-			selected: category.selected,
-		}
-	})
+	const paginatedCategories = state.data.slice(start, end)
 
 	return (
 		<main className="flex-grow flex h-full flex-col items-center  ">
@@ -60,21 +44,28 @@ export function Interests({
 					</div>
 					<div>
 						<CheckboxReactHookFormMultiple
-							items={catrgoriesWithLabelAndID}
+							items={paginatedCategories}
 							userId={userId}
+							state={state}
 						/>
 						<Pagination>
 							<PaginationContent>
-								{currentPage > 1 && (
-									<PaginationItem>
-										<PaginationPrevious
-											href={`/interests/page/${currentPage - 1}`}
-										/>
-									</PaginationItem>
-								)}
+								<PaginationItem>
+									<PaginationPrevious
+										disabled={currentPage <= 1}
+										aria-disabled={currentPage <= 1}
+										onClick={() => {
+											setCurrentPage(currentPage - 1)
+										}}
+									/>
+								</PaginationItem>
 
 								<PaginationItem>
-									<PaginationLink href={`/interests/page/${currentPage}`}>
+									<PaginationLink
+										onClick={() => {
+											setCurrentPage(currentPage)
+										}}
+									>
 										{currentPage}
 									</PaginationLink>
 								</PaginationItem>
@@ -82,13 +73,15 @@ export function Interests({
 									<PaginationEllipsis />
 								</PaginationItem>
 
-								{currentPage < totalPages && (
-									<PaginationItem>
-										<PaginationNext
-											href={`/interests/page/${currentPage + 1}`}
-										/>
-									</PaginationItem>
-								)}
+								<PaginationItem>
+									<PaginationNext
+										disabled={currentPage >= totalPages}
+										aria-disabled={currentPage >= totalPages}
+										onClick={() => {
+											setCurrentPage(currentPage + 1)
+										}}
+									/>
+								</PaginationItem>
 							</PaginationContent>
 						</Pagination>
 					</div>
