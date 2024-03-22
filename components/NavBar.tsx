@@ -78,7 +78,7 @@ export function NavBar() {
 				<NavigationMenu>
 					<Link href="/" legacyBehavior passHref>
 						<NavigationMenuLink className={navigationMenuTriggerStyle()}>
-							<div className="font-bold text-[32px] uppercase">NueComm</div>
+							<div className=" text-[32px] ">Nuecomm</div>
 						</NavigationMenuLink>
 					</Link>
 				</NavigationMenu>
