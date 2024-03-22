@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { useSignIn } from "@clerk/nextjs"
+import { useSignIn, currentUser, auth, useAuth, useClerk } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import { z } from "zod"
 
@@ -14,6 +14,18 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 export default function UserAuthForm() {
+	console.log(
+		"UserAuthForm",
+		currentUser,
+		"auth",
+		auth,
+		"useAuth",
+		useAuth,
+		"useClerk",
+		useClerk,
+	)
+	const user = currentUser()
+	const {} = useAuth()
 	const { isLoaded, signIn, setActive } = useSignIn()
 	const [isLoading, setIsLoading] = React.useState<boolean>(false)
 	const [isFormValid, setIsFormValid] = React.useState<boolean>(false)
