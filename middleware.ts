@@ -5,10 +5,15 @@ import { authMiddleware, redirectToSignIn } from "@clerk/nextjs"
 // for more information about configuring your Middleware
 
 export default authMiddleware({
+	publicRoutes: ["/", "sign-in", "sign-up"],
 	afterAuth(auth, req, evt) {
-		// if (!auth.userId && req.nextUrl.pathname === "/") {
-		// 	return NextResponse.next()
-		// }
+		if (
+			(!auth.userId && req.nextUrl.pathname === "/") ||
+			req.nextUrl.pathname === "/sign-in" ||
+			req.nextUrl.pathname === "/sign-up"
+		) {
+			return NextResponse.next()
+		}
 		if (!auth.userId && !auth.isPublicRoute) {
 			return redirectToSignIn({ returnBackUrl: req.url })
 		}
@@ -24,7 +29,7 @@ export default authMiddleware({
 		}
 	},
 	// Allow signed out users to access the specified routes:
-	publicRoutes: ["/"],
+
 	// Prevent the specified routes from accessing
 	// authentication information:
 	// ignoredRoutes: ['/no-auth-in-this-route'],
