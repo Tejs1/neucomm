@@ -8,6 +8,13 @@ export default authMiddleware({
 	publicRoutes: ["/", "sign-in", "sign-up"],
 	afterAuth(auth, req, evt) {
 		if (
+			(auth.userId && req.nextUrl.pathname === "/sign-in") ||
+			(auth.userId && req.nextUrl.pathname === "/sign-up")
+		) {
+			const profile = new URL("/profile", req.url)
+			return NextResponse.redirect(profile)
+		}
+		if (
 			(!auth.userId && req.nextUrl.pathname === "/") ||
 			req.nextUrl.pathname === "/sign-in" ||
 			req.nextUrl.pathname === "/sign-up"
@@ -19,13 +26,6 @@ export default authMiddleware({
 		}
 		if (auth.userId && !auth.isPublicRoute) {
 			return NextResponse.next()
-		}
-		if (
-			(auth.userId && req.nextUrl.pathname === "/sign-in") ||
-			req.nextUrl.pathname === "/sign-up"
-		) {
-			const profile = new URL("/profile", req.url)
-			return NextResponse.redirect(profile)
 		}
 	},
 	// Allow signed out users to access the specified routes:

@@ -12,7 +12,7 @@ const createNewUser = async (name: string) => {
 
 	const user = await currentUser()
 	// timeoout
-	await new Promise(resolve => setTimeout(resolve, 2000))
+
 	if (user) {
 		try {
 			const match = await prisma.user.findUnique({

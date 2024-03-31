@@ -17,6 +17,16 @@ import {
 	NavigationMenuTrigger,
 	navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 import { useClerk } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import { ThemeSwitch } from "@/components/ThemeSwitch"
@@ -59,20 +69,62 @@ const components: { title: string; href: string; description: string }[] = [
 	},
 ]
 
-export function NavBar() {
-	const { signOut } = useClerk()
+export function NavBar({ userId }: { userId: string | null }) {
+	const { signOut, user } = useClerk()
+	console.log(userId)
 	const router = useRouter()
 	return (
 		<div className="w-full">
 			<div className="flex w-full items-center justify-end gap-4 pt-1 pr-4">
-				<Link href="/sign-up"> SignUp</Link>
-				<Link href="/sign-in"> Login</Link>
-				<button onClick={() => signOut(() => router.push("/"))}>
-					Sign Out
-				</button>
+				{user ? <div>Hi {user.id}</div> : <div>Hi Guest</div>}
+				{user ? (
+					<button onClick={() => signOut(() => router.push("/"))}>
+						Sign Out
+					</button>
+				) : (
+					<>
+						<Link href="/sign-up"> SignUp</Link>
+						<Link href="/sign-in"> Login</Link>
+					</>
+				)}
+
 				<Link href="/help"> Help</Link>
 				<Link href="/orders"> orders</Link>
-				<Link href="/profile"> HI John</Link>
+				<DropdownMenu>
+					<DropdownMenuTrigger>
+						<Avatar>
+							<AvatarImage src="https://github.com/shadcn.png" />
+							<AvatarFallback>CN</AvatarFallback>
+						</Avatar>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent>
+						{user ? (
+							<>
+								<DropdownMenuLabel>My Account</DropdownMenuLabel>
+								<DropdownMenuSeparator />
+								<DropdownMenuItem>
+									<Link href="profile">Profile</Link>
+								</DropdownMenuItem>
+								<DropdownMenuItem>Cart</DropdownMenuItem>
+								<DropdownMenuItem>Wishlist</DropdownMenuItem>
+								<DropdownMenuItem
+									onClick={() => signOut(() => router.push("/"))}
+								>
+									Sign Out
+								</DropdownMenuItem>
+							</>
+						) : (
+							<>
+								<DropdownMenuItem>
+									<Link href="/sign-up"> SignUp</Link>
+								</DropdownMenuItem>
+								<DropdownMenuItem>
+									<Link href="/sign-in"> Login</Link>
+								</DropdownMenuItem>
+							</>
+						)}
+					</DropdownMenuContent>
+				</DropdownMenu>
 			</div>
 			<div className="flex flex-row justify-between w-full items-center">
 				<NavigationMenu>
