@@ -10,7 +10,7 @@
 	},
 	"dependencies": {
 		"@azure/communication-email": "^1.0.0",
-		"@clerk/nextjs": "^4.29.9",
+		"@clerk/nextjs": "^4.31.5",
 		"@hookform/resolvers": "^3.3.4",
 		"@neondatabase/serverless": "^0.9.0",
 		"@prisma/adapter-neon": "^5.11.0",
