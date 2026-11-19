@@ -46,9 +46,9 @@ const createNewUser = async (name: string) => {
 const NewUser = async ({
 	searchParams,
 }: {
-	searchParams: { name: string }
+	searchParams: Promise<{ name: string }>
 }) => {
-	await createNewUser(searchParams.name)
+	await createNewUser((await searchParams).name)
 	return <div>...loading</div>
 }
 
